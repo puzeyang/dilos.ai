@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DILOS.ai — Embrace AI. Build Better.</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #111827;
+      --navy-deep:   #0b1120;
+      --navy-mid:    #1a2540;
+      --navy-card:   #162033;
+      --orange:      #e8561e;
+      --orange-glow: rgba(232, 86, 30, 0.30);
+      --orange-dim:  rgba(232, 86, 30, 0.12);
+      --border:      rgba(255,255,255,0.08);
+      --border-o:    rgba(232,86,30,0.25);
+      --text:        #e8edf5;
+      --muted:       #7a8ca8;
+      --muted-2:     #a0b0c8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+      background: var(--navy-deep);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle dot-grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(11,17,32,0.82);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* SVG logo inline */
+    .nav-logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+    .nav-wordmark {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #c8d6ea;
+    }
+    .nav-wordmark span { color: var(--orange); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      padding: 0.5rem 1.2rem;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+    }
+
+    /* Large bg "D" watermark */
+    .hero-watermark {
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* orange glow orb */
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(232,86,30,0.14), transparent 65%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -56%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--orange-dim);
+      border: 1px solid var(--border-o);
+      color: #f0a070;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.32rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-badge::before {
+      content: "";
+      width: 6px; height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--orange);
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    .hero-sub {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      color: var(--muted-2);
+      max-width: 580px;
+      line-height: 1.75;
+      margin-bottom: 2.8rem;
+    }
+
+    .cta-group {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.78rem 1.7rem;
+      border-radius: 9px;
+      font-size: 0.93rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 4px 24px var(--orange-glow);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 36px var(--orange-glow); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--muted-2);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: rgba(232,86,30,0.4); color: #f0a070; transform: translateY(-2px); }
+
+    /* hero stats */
+    .hero-stats {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+      width: 100%;
+      max-width: 700px;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -1px;
+    }
+    .stat-num span { color: var(--orange); }
+    .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-top: 0.2rem; letter-spacing: 0.04em; text-transform: uppercase; }
+
+    /* ── SECTION SHARED ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 2rem;
+    }
+
+    .section-eyebrow {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 1.1rem;
+      color: var(--text);
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 620px;
+      margin: 0 auto 3.5rem;
+    }
+
+    /* orange accent line under section titles */
+    .title-line {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+    .title-line::after {
+      content: "";
+      width: 48px; height: 3px;
+      background: var(--orange);
+      border-radius: 2px;
+      display: block;
+    }
+
+    /* ── MISSION ── */
+    #mission { background: linear-gradient(180deg, transparent, rgba(232,86,30,0.04) 50%, transparent); }
+
+    .mission-card {
+      max-width: 840px;
+      margin: 0 auto;
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--orange);
+      border-radius: 16px;
+      padding: 3rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(232,86,30,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .mission-quote {
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      line-height: 1.85;
+      color: var(--muted-2);
+      margin-bottom: 1.75rem;
+    }
+    .mission-quote strong { color: var(--text); font-weight: 700; }
+    .mission-quote em { color: var(--orange); font-style: normal; font-weight: 700; }
+
+    .mission-attr {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.83rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .mission-attr::before {
+      content: "";
+      width: 24px; height: 2px;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+
+    /* ── PILLARS ── */
+    #pillars { background: var(--navy-mid); }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .pillar {
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .pillar:hover {
+      border-color: var(--border-o);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    .pillar-icon-wrap {
+      width: 44px; height: 44px;
+      background: var(--orange-dim);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+    }
+    .pillar-icon-wrap svg { width: 22px; height: 22px; }
+    .pillar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+    .pillar p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── VISION TIMELINE ── */
+    .timeline {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .timeline-item { display: flex; gap: 1.5rem; }
+    .timeline-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 36px;
+    }
+    .t-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--orange);
+      background: var(--navy-deep);
+      flex-shrink: 0;
+      margin-top: 3px;
+      box-shadow: 0 0 10px var(--orange-glow);
+    }
+    .t-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+      background: linear-gradient(to bottom, var(--border-o), transparent);
+      margin-top: 3px;
+    }
+    .timeline-body { padding-bottom: 2.5rem; }
+    .timeline-body h3 { font-size: 1.02rem; font-weight: 700; color: var(--orange); margin-bottom: 0.4rem; }
+    .timeline-body p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── JOIN / CTA ── */
+    #join { padding: 5rem 2rem; }
+    .cta-banner {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--navy-card);
+      border: 1px solid var(--border-o);
+      border-radius: 20px;
+      padding: 4rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% -10%, rgba(232,86,30,0.12), transparent 65%);
+      pointer-events: none;
+    }
+    .cta-banner h2 {
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 0.9rem;
+      color: var(--text);
+      position: relative;
+    }
+    .cta-banner p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+      position: relative;
+    }
+    .email-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .email-input {
+      flex: 1;
+      max-width: 310px;
+      padding: 0.78rem 1.15rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-size: 0.93rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .email-input::placeholder { color: var(--muted); }
+    .email-input:focus { border-color: rgba(232,86,30,0.5); }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--navy-deep);
+    }
+    .footer-brand { display: flex; align-items: center; gap: 0.5rem; }
+    .footer-wordmark { font-size: 0.95rem; font-weight: 800; letter-spacing: 1px; color: #c8d6ea; }
+    .footer-wordmark span { color: var(--orange); }
+    footer small { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0.9rem 1.2rem; }
+      .nav-links { display: none; }
+      .mission-card { padding: 2rem 1.4rem; }
+      .cta-banner { padding: 2.5rem 1.4rem; }
+      footer { justify-content: center; text-align: center; }
+      h1 { letter-spacing: -1px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="nav-wordmark">DILOS<span>.</span>ai</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#pillars">Pillars</a></li>
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#join">Contact</a></li>
+  </ul>
+
+  <a href="#products" class="nav-cta">Our Products</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <!-- large watermark D -->
+  <svg class="hero-watermark" width="600" height="640" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 4 H14 C22.8 4 28 9.6 28 16 C28 22.4 22.8 28 14 28 H4 Z"/>
+    <path d="M8.5 8.5 H13.5 C19.8 8.5 23.5 11.8 23.5 16 C23.5 20.2 19.8 23.5 13.5 23.5 H8.5 Z" fill="var(--navy-deep)"/>
+  </svg>
+
+  <div class="hero-badge">Embrace AI &mdash; Build Better</div>
+
+  <h1>
+    The Future Belongs<br>
+    to <em>Those Who Build It</em>
+  </h1>
+
+  <p class="hero-sub">
+    DILOS.ai helps individuals, teams, and organizations harness the full power
+    of artificial intelligence — not to replace human ingenuity, but to amplify it.
+  </p>
+
+  <div class="cta-group">
+    <a href="#mission" class="btn btn-primary">Our Mission</a>
+    <a href="#join" class="btn btn-outline">Get Early Access</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">100<span>×</span></div>
+      <div class="stat-label">Productivity Multiplier</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>∞</span></div>
+      <div class="stat-label">Human Potential</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">1<span> Future</span></div>
+      <div class="stat-label">We Build Together</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MISSION ── -->
+<section id="mission">
+  <p class="section-eyebrow">Why We Exist</p>
+  <h2 class="section-title">Our Mission</h2>
+  <div class="title-line"></div>
+
+  <div class="mission-card">
+    <p class="mission-quote">
+      At DILOS.ai, our mission is to <strong>embrace AI as a partner in progress</strong> —
+      making it accessible, understandable, and actionable for everyone.
+      We don't fear the future; <em>we build it.</em> By combining
+      <strong>human creativity with the speed of intelligence</strong>, we accelerate
+      breakthroughs in science, education, business, and daily life.
+      We are committed to building AI-powered tools that are
+      <strong>ethical, inclusive, and purposeful</strong> — so that the benefits of
+      artificial intelligence lift all of humanity, not just a privileged few.
+      The future is not something that happens to us. <em>We make it.</em>
+    </p>
+    <p class="mission-attr">DILOS.ai founding team</p>
+  </div>
+</section>
+
+<!-- ── PILLARS ── -->
+<section id="pillars">
+  <p class="section-eyebrow">What We Stand For</p>
+  <h2 class="section-title">Our Core Pillars</h2>
+  <div class="title-line"></div>
+
+  <div class="pillars">
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </div>
+      <h3>Embrace, Don't Fear</h3>
+      <p>AI is a force multiplier. We champion curiosity and courage — leaning into change rather than retreating from it.</p>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h3>Build for Good</h3>
+      <p>Every product we ship is held to one standard: does it make the world genuinely better?</p>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h3>Human + AI Together</h3>
+      <p>We reject the false choice between humans and machines. The best outcomes emerge when both work in concert.</p>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          <line x1="12" y1="15" x2="12" y2="17"/>
+        </svg>
+      </div>
+      <h3>Accessible by Design</h3>
+      <p>Advanced AI should not be a luxury. We build tools that are usable and affordable for everyone, regardless of background.</p>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3>Responsible Innovation</h3>
+      <p>Speed matters, but so does safety. We move fast with intention — rigorously testing for bias, fairness, and unintended consequences.</p>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8561e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h3>Long-Term Thinking</h3>
+      <p>We optimize for decades, not quarters. The decisions we make today shape the AI landscape for generations.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── VISION ── -->
+<section id="vision">
+  <p class="section-eyebrow">The Road Ahead</p>
+  <h2 class="section-title">Where We're Going</h2>
+  <div class="title-line"></div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-track"><div class="t-dot"></div><div class="t-line"></div></div>
+      <div class="timeline-body">
+        <h3>Democratize AI Literacy</h3>
+        <p>Give every person the knowledge and tools to understand, use, and critically evaluate AI — starting with education and community programs.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-track"><div class="t-dot"></div><div class="t-line"></div></div>
+      <div class="timeline-body">
+        <h3>Accelerate Human Potential</h3>
+        <p>Deploy AI assistants that help professionals do their best work faster — in healthcare, research, engineering, and creative fields.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-track"><div class="t-dot"></div><div class="t-line"></div></div>
+      <div class="timeline-body">
+        <h3>Solve Humanity's Hardest Problems</h3>
+        <p>Partner with scientists, governments, and NGOs to apply AI where it can have civilizational impact — climate, disease, poverty, education.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-track"><div class="t-dot"></div></div>
+      <div class="timeline-body">
+        <h3>Set the Ethical AI Standard</h3>
+        <p>Lead the industry in transparent, auditable, and fair AI systems — and advocate for policies that protect people while enabling progress.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRODUCTS ── -->
+<section id="products">
+  <p class="section-eyebrow">What We Build</p>
+  <h2 class="section-title">Our Products</h2>
+  <div class="title-line"></div>
+
+  <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+
+    <!-- ZelleRent card -->
+    <a href="zellerent.html" style="text-decoration:none;">
+      <div class="pillar" style="display:flex;flex-direction:column;gap:1rem;height:100%;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <img src="zellerent-icon-192.png" width="44" height="44" style="flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(51,84,244,0.18);" alt="ZelleRent" />
+          <div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--text);">ZelleRent</div>
+            <div style="font-size:0.75rem;color:var(--muted);font-weight:500;margin-top:1px;">AI Agent for Landlord Intelligence</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.65;flex:1;">
+          An agentic AI that watches your Gmail, matches Zelle and Cash App rent payments
+          to your tenants, and sends branded receipts — automatically. Your rental portfolio,
+          run by AI.
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+          <span style="background:rgba(51,84,244,0.08);color:#3354f4;font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;">iOS App</span>
+          <span style="background:rgba(43,183,65,0.1);color:#1a8a30;font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;">Agentic AI</span>
+          <span style="background:rgba(232,86,30,0.09);color:#c04a10;font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;border-radius:999px;">Landlords</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;font-weight:700;color:var(--orange);">
+          Learn more
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Coming soon card -->
+    <div class="pillar" style="display:flex;flex-direction:column;gap:1rem;height:100%;opacity:0.55;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(232,86,30,0.1);border:2px dashed rgba(232,86,30,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--text);">More Coming Soon</div>
+          <div style="font-size:0.75rem;color:var(--muted);font-weight:500;margin-top:1px;">DILOS.ai Product Studio</div>
+        </div>
+      </div>
+      <p style="font-size:0.9rem;color:var(--muted);line-height:1.65;flex:1;">
+        We're building more AI-powered tools for real-world problems. Stay tuned — or
+        join our early access list to shape what comes next.
+      </p>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--muted);">In development</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── JOIN ── -->
+<section id="join">
+  <div class="cta-banner">
+    <h2>Ready to Build the Future?</h2>
+    <p>
+      Join the DILOS.ai community — early access members shape the tools,
+      set the tone, and lead the movement.
+    </p>
+    <div class="email-row">
+      <input class="email-input" type="email" placeholder="Enter your email address" />
+      <button class="btn btn-primary" onclick="handleSignup(event)">Get Early Access</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-brand">
+    <span class="footer-wordmark">DILOS<span>.</span>ai</span>
+  </div>
+  <small>&copy; 2024 DILOS.ai — Embrace AI. Build Better.</small>
+  <small>contact@dilos.ai</small>
+</footer>
+
+<script>
+  function handleSignup(e) {
+    e.preventDefault();
+    const input = document.querySelector('.email-input');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = '#ef4444';
+      setTimeout(() => { input.style.borderColor = ''; }, 1500);
+      return;
+    }
+    input.value = '';
+    const btn = e.currentTarget;
+    btn.textContent = "You're on the list!";
+    btn.style.background = '#16a34a';
+    btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.35)';
+    btn.disabled = true;
+  }
+</script>
+
+</body>
+</html>
