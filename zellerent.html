@@ -610,10 +610,17 @@
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="#" class="nav-brand">
-    <img src="zellerent-icon-192.png" class="app-icon" alt="ZelleRent" />
-    <span class="brand-name">Zelle<span>Rent</span></span>
-  </a>
+  <div style="display:flex;align-items:center;gap:1.25rem;">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      DILOS.ai
+    </a>
+    <span style="color:var(--border);font-size:0.9rem;">/</span>
+    <a href="#" class="nav-brand">
+      <img src="zellerent-icon-192.png" class="app-icon" alt="ZelleRent" />
+      <span class="brand-name">Zelle<span>Rent</span></span>
+    </a>
+  </div>
 
   <ul class="nav-links">
     <li><a href="#how">How It Works</a></li>
