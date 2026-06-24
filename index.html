@@ -65,7 +65,8 @@
       letter-spacing: 1px;
       color: #c8d6ea;
     }
-    .nav-wordmark span { color: var(--orange); }
+    .nav-wordmark .dot { color: var(--orange); }
+    .nav-wordmark .suffix { color: #7a8ca8; }
 
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
@@ -468,7 +469,8 @@
     }
     .footer-brand { display: flex; align-items: center; gap: 0.5rem; }
     .footer-wordmark { font-size: 0.95rem; font-weight: 800; letter-spacing: 1px; color: #c8d6ea; }
-    .footer-wordmark span { color: var(--orange); }
+    .footer-wordmark .dot { color: var(--orange); }
+    .footer-wordmark .suffix { color: #7a8ca8; }
     footer small { font-size: 0.78rem; color: var(--muted); }
 
     /* ── RESPONSIVE ── */
@@ -487,7 +489,7 @@
 <!-- ── NAV ── -->
 <nav>
   <a href="#" class="nav-logo">
-    <span class="nav-wordmark">DILOS<span>.</span>ai</span>
+    <span class="nav-wordmark">DILOS<span class="dot">.</span><span class="suffix">ai</span></span>
   </a>
 
   <ul class="nav-links">
@@ -753,7 +755,7 @@
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-brand">
-    <span class="footer-wordmark">DILOS<span>.</span>ai</span>
+    <span class="footer-wordmark">DILOS<span class="dot">.</span><span class="suffix">ai</span></span>
   </div>
   <small>&copy; 2024 DILOS.ai — Embrace AI. Build Better.</small>
   <small>contact@dilos.ai</small>
