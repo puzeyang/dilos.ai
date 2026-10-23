@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dilos Photo — Keep everything. Cloud only what matters.</title>
+  <meta name="description" content="Dilos Photo for Mac archives photos past your rules to a folder you choose, then frees their iCloud space when you say so. No account, no servers." />
+  <meta property="og:title" content="Dilos Photo — Keep everything. Cloud only what matters." />
+  <meta property="og:description" content="Archive old photos to your Mac. Free up iCloud space on your terms." />
+  <meta property="og:image" content="https://dilos.ai/dilos-photo-icon.png" />
+  <link rel="icon" type="image/png" href="dilos-photo-favicon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-deep:  #0b1120;
+      --navy:       #111827;
+      --card:       #141d2e;
+      --card-2:     #1a2438;
+      --border:     rgba(255,255,255,0.08);
+      --text:       #e8edf5;
+      --muted:      #8a9ab4;
+      --muted-2:    #a8b6cc;
+      --blue:       #0a74ff;
+      --blue-2:     #3d8fff;
+      --blue-glow:  rgba(10,116,255,0.30);
+      --blue-dim:   rgba(10,116,255,0.12);
+      --amber:      #f5a223;
+      --amber-dim:  rgba(245,162,35,0.12);
+      --green:      #30ba5e;
+      --green-dim:  rgba(48,186,94,0.12);
+      --indigo:     #5e6bf6;
+      --orange:     #e8561e;
+      --red:        #ef4444;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+      background: var(--navy-deep);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 2.5rem;
+      background: rgba(11,17,32,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-left { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      text-decoration: none; white-space: nowrap;
+    }
+    .nav-back:hover { color: var(--text); }
+    .nav-wordmark { font-weight: 900; letter-spacing: -0.5px; color: var(--text); }
+    .nav-wordmark .dot { color: var(--orange); }
+    .nav-sep { width: 1px; height: 22px; background: var(--border); }
+    .nav-product { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; min-width: 0; }
+    .nav-product img { width: 30px; height: 30px; }
+    .nav-product span { font-weight: 800; font-size: 1.02rem; white-space: nowrap; }
+    .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+    .nav-links a { font-size: 0.88rem; font-weight: 500; color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+      padding: 0.7rem 1.4rem; border-radius: 11px;
+      font: inherit; font-size: 0.92rem; font-weight: 700;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform 0.18s, box-shadow 0.18s, background 0.18s, border-color 0.18s;
+    }
+    .btn-blue { background: var(--blue); color: #fff; box-shadow: 0 2px 18px var(--blue-glow); }
+    .btn-blue:hover { background: var(--blue-2); transform: translateY(-1px); box-shadow: 0 6px 28px var(--blue-glow); }
+    .btn-ghost { background: transparent; color: var(--text); border: 1.5px solid rgba(255,255,255,0.16); }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.32); transform: translateY(-1px); }
+    .btn-lg { padding: 0.9rem 1.8rem; font-size: 1rem; border-radius: 13px; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 5.5rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 900px; height: 900px;
+      top: -420px; left: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(10,116,255,0.16) 0%, transparent 62%);
+      pointer-events: none;
+    }
+    .hero-icon {
+      width: 104px; height: 104px;
+      margin: 0 auto 1.6rem;
+      display: block;
+      filter: drop-shadow(0 14px 36px rgba(10,116,255,0.35));
+      position: relative;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--blue-dim); color: #8fbcff;
+      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.35rem 0.9rem; border-radius: 999px;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .badge svg { width: 13px; height: 13px; }
+    .hero h1 {
+      font-size: clamp(2.3rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -2px;
+      margin-bottom: 1.3rem;
+      position: relative;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #4f9dff, #8ec2ff);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+    }
+    .hero-sub {
+      max-width: 600px; margin: 0 auto 2.2rem;
+      font-size: clamp(1rem, 2vw, 1.16rem);
+      line-height: 1.7; color: var(--muted-2);
+      position: relative;
+    }
+    .hero-cta { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; position: relative; }
+    .hero-note { margin-top: 1.1rem; font-size: 0.82rem; color: var(--muted); position: relative; }
+
+    /* ── APP WINDOW MOCK ── */
+    .mock-wrap { padding: 1rem 2rem 5rem; position: relative; }
+    .mock {
+      max-width: 1040px; margin: 0 auto;
+      border-radius: 14px;
+      background: #111520;
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.4);
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      overflow: hidden;
+      text-align: left;
+    }
+    .mock-side { background: #161b27; border-right: 1px solid var(--border); padding: 14px 12px; display: flex; flex-direction: column; }
+    .lights { display: flex; gap: 7px; margin-bottom: 22px; }
+    .lights i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+    .lights i:nth-child(1) { background: #ff5f57; }
+    .lights i:nth-child(2) { background: #febc2e; }
+    .lights i:nth-child(3) { background: #28c840; }
+    .mock-brand { display: flex; gap: 9px; align-items: center; margin-bottom: 22px; padding: 0 4px; }
+    .mock-brand img { width: 36px; height: 36px; }
+    .mock-brand b { font-size: 13px; display: block; }
+    .mock-brand small { font-size: 9.5px; color: var(--muted); line-height: 1.3; display: block; }
+    .mock-nav { display: flex; flex-direction: column; gap: 3px; }
+    .mock-nav span { font-size: 12px; color: #c9d3e3; padding: 7px 10px; border-radius: 7px; display: flex; align-items: center; gap: 8px; }
+    .mock-nav span.on { background: var(--blue); color: #fff; font-weight: 600; }
+    .mock-nav svg { width: 13px; height: 13px; }
+    .mock-main { padding: 22px 24px 26px; min-width: 0; }
+    .mock-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+    .mock-head h3 { font-size: 22px; font-weight: 800; }
+    .mock-head p { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+    .pill { font-size: 11px; background: rgba(255,255,255,0.06); padding: 6px 11px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: block; }
+    .mock-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+    .mc { border-radius: 10px; padding: 12px; background: #182031; border: 1px solid var(--border); display: flex; gap: 10px; min-width: 0; }
+    .mc .ic { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mc .ic svg { width: 14px; height: 14px; }
+    .mc small { font-size: 9.5px; color: var(--muted); display: block; white-space: nowrap; }
+    .mc b { font-size: 19px; font-weight: 800; display: block; margin: 2px 0 1px; }
+    .mc em { font-style: normal; font-size: 9px; color: var(--muted); display: block; white-space: nowrap; }
+    .mc.blue { background: #18253f; border-color: #28406f; }
+    .mc.amber { background: #2e2416; border-color: #7a5823; }
+    .mock-banner { border-radius: 10px; background: #182031; border: 1px solid var(--border); padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .stack { position: relative; width: 104px; height: 70px; flex-shrink: 0; }
+    .stack i { position: absolute; width: 64px; height: 52px; border-radius: 5px; border: 3px solid #f2f4f8; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .stack i:nth-child(1) { left: 0; top: 10px; transform: rotate(-8deg); background: linear-gradient(160deg, #f6c37a, #d96c4a); }
+    .stack i:nth-child(2) { left: 20px; top: 4px; transform: rotate(3deg); background: linear-gradient(160deg, #7cc6f0, #3a6fb8); }
+    .stack i:nth-child(3) { left: 40px; top: 12px; transform: rotate(10deg); background: linear-gradient(160deg, #9bd88f, #3f8f5a); }
+    .mock-banner .txt { flex: 1; min-width: 0; }
+    .mock-banner b { font-size: 13px; display: block; margin-bottom: 4px; }
+    .mock-banner p { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+    .mini-btn { font-size: 10.5px; font-weight: 600; background: var(--blue); color: #fff; padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
+    .mock-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .mr { border-radius: 10px; background: #182031; border: 1px solid var(--border); padding: 12px; }
+    .mr b { font-size: 11.5px; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .mr b i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+    .mr p { font-size: 10px; color: var(--muted); line-height: 1.5; }
+
+    /* ── SECTIONS ── */
+    section { padding: 5.5rem 2rem; position: relative; }
+    .eyebrow { text-align: center; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-2); margin-bottom: 0.8rem; }
+    .title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.7rem); font-weight: 900; letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem; }
+    .sub { text-align: center; max-width: 620px; margin: 0 auto 3.2rem; color: var(--muted-2); line-height: 1.7; font-size: 1.02rem; }
+    .alt { background: rgba(255,255,255,0.018); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    /* problem strip */
+    .problem { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .problem div { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.6rem; }
+    .problem h3 { font-size: 1.02rem; margin-bottom: 0.5rem; }
+    .problem p { color: var(--muted); font-size: 0.92rem; line-height: 1.65; }
+    .problem .x { color: var(--red); font-weight: 800; margin-right: 0.35rem; }
+    .problem .ok { color: var(--green); font-weight: 800; margin-right: 0.35rem; }
+    .problem div.answer { background: linear-gradient(160deg, #13284a, #121c30); border-color: #2a4675; }
+
+    /* steps */
+    .steps { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+    .step { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1.8rem; position: relative; }
+    .step-num { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1rem; }
+    .step-icon { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
+    .step-icon svg { width: 22px; height: 22px; }
+    .step h3 { font-size: 1.15rem; margin-bottom: 0.55rem; }
+    .step p { color: var(--muted); font-size: 0.93rem; line-height: 1.65; }
+
+    /* rules demo */
+    .split { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .split h2 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); font-weight: 900; letter-spacing: -1px; line-height: 1.15; margin-bottom: 1rem; }
+    .split p { color: var(--muted-2); line-height: 1.75; margin-bottom: 1rem; }
+    .split ul { list-style: none; display: grid; gap: 0.7rem; margin-top: 1.4rem; }
+    .split li { display: flex; gap: 0.7rem; color: var(--muted-2); font-size: 0.95rem; line-height: 1.55; }
+    .split li svg { flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; }
+    .rules { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1.4rem; box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
+    .rules-head { font-size: 0.8rem; color: var(--muted); font-weight: 600; margin-bottom: 0.9rem; display: flex; justify-content: space-between; }
+    .rule { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1rem; border-radius: 12px; background: var(--card-2); border: 1px solid var(--border); margin-bottom: 0.6rem; }
+    .rule:last-child { margin-bottom: 0; }
+    .rule-l { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .rule-ic { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rule-ic svg { width: 16px; height: 16px; }
+    .rule b { font-size: 0.92rem; display: block; }
+    .rule small { font-size: 0.76rem; color: var(--muted); }
+    .rule .val { font-size: 0.8rem; font-weight: 700; background: rgba(255,255,255,0.06); padding: 0.35rem 0.7rem; border-radius: 8px; white-space: nowrap; }
+    .rule .val.forever { color: #9fd8ae; background: var(--green-dim); }
+
+    /* features */
+    .features { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .feature { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.6rem; transition: border-color 0.25s, transform 0.25s; }
+    .feature:hover { border-color: rgba(10,116,255,0.35); transform: translateY(-3px); }
+    .f-ic { width: 42px; height: 42px; border-radius: 11px; background: var(--blue-dim); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .f-ic svg { width: 20px; height: 20px; }
+    .feature h3 { font-size: 1.02rem; margin-bottom: 0.45rem; }
+    .feature p { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
+
+    /* archive folder */
+    .tree { background: #0f1625; border: 1px solid var(--border); border-radius: 16px; padding: 1.3rem 1.4rem; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.82rem; line-height: 1.85; color: var(--muted-2); overflow-x: auto; white-space: pre; box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
+    .tree .d { color: #8fbcff; }
+    .tree .j { color: var(--amber); }
+    .tree .c { color: #5d6b84; }
+
+    /* privacy */
+    .privacy { max-width: 880px; margin: 0 auto; text-align: center; background: linear-gradient(160deg, #13284a 0%, #111a2c 70%); border: 1px solid #2a4675; border-radius: 24px; padding: 3.2rem 2.4rem; }
+    .privacy svg.shield { width: 46px; height: 46px; margin-bottom: 1.2rem; }
+    .privacy h2 { font-size: clamp(1.6rem, 3.5vw, 2.3rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 0.9rem; }
+    .privacy p { color: var(--muted-2); line-height: 1.75; max-width: 620px; margin: 0 auto 1.6rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-bottom: 1.6rem; }
+    .chips span { font-size: 0.82rem; font-weight: 600; background: rgba(255,255,255,0.06); border: 1px solid var(--border); padding: 0.45rem 0.9rem; border-radius: 999px; }
+    .privacy a.link { color: #8fbcff; font-weight: 600; text-decoration: none; font-size: 0.92rem; }
+    .privacy a.link:hover { text-decoration: underline; }
+
+    /* faq */
+    .faq { max-width: 780px; margin: 0 auto; display: grid; gap: 0.75rem; }
+    details { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; }
+    details[open] { border-color: rgba(10,116,255,0.3); }
+    summary { cursor: pointer; font-weight: 700; font-size: 0.98rem; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--muted); font-weight: 400; font-size: 1.3rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--muted); line-height: 1.7; font-size: 0.93rem; margin-top: 0.75rem; }
+
+    /* feedback */
+    .fb { max-width: 720px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 2.4rem; }
+    .fb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1rem; }
+    .field label { font-size: 0.82rem; font-weight: 600; color: var(--muted-2); }
+    .field label small { color: var(--muted); font-weight: 500; }
+    .field input, .field textarea, .field select {
+      font: inherit; font-size: 0.95rem; color: var(--text);
+      background: #0f1625; border: 1.5px solid rgba(255,255,255,0.10); border-radius: 11px;
+      padding: 0.75rem 0.9rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+    }
+    .field textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-dim); }
+    .kinds { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .kinds input { position: absolute; opacity: 0; pointer-events: none; }
+    .kinds label { cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--muted-2); background: #0f1625; border: 1.5px solid rgba(255,255,255,0.10); padding: 0.5rem 0.95rem; border-radius: 999px; transition: all 0.15s; }
+    .kinds input:checked + label { background: var(--blue-dim); border-color: var(--blue); color: #fff; }
+    .kinds input:focus-visible + label { box-shadow: 0 0 0 3px var(--blue-dim); }
+    .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    .fb-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .fb-foot small { color: var(--muted); font-size: 0.78rem; line-height: 1.5; max-width: 380px; }
+    .fb-foot small a { color: #8fbcff; }
+    .fb-status { margin-top: 1rem; font-size: 0.9rem; font-weight: 600; min-height: 1.3em; }
+    .fb-status.ok { color: #7fd99a; }
+    .fb-status.err { color: #ff8f8f; }
+    .count { font-size: 0.74rem; color: var(--muted); text-align: right; margin-top: -0.6rem; margin-bottom: 0.8rem; }
+
+    /* footer */
+    footer { border-top: 1px solid var(--border); padding: 2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    footer small { color: var(--muted); font-size: 0.82rem; }
+    footer a { color: var(--muted); text-decoration: none; font-size: 0.82rem; }
+    footer a:hover { color: var(--text); }
+    .foot-links { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+
+    /* reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .mock { grid-template-columns: 1fr; }
+      .mock-side { display: none; }
+      .mock-cards { grid-template-columns: repeat(2, 1fr); }
+      .features, .steps, .problem { grid-template-columns: 1fr 1fr; }
+      .split { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0.75rem 1rem; }
+      .nav-back span, .nav-sep, .nav-cta-text { display: none; }
+      .hero { padding: 3.5rem 1rem 2rem; }
+      .mock-wrap { padding: 0.5rem 1rem 3.5rem; }
+      .mock-main { padding: 16px; }
+      .mock-row { grid-template-columns: 1fr; }
+      .mock-banner { flex-direction: column; align-items: flex-start; }
+      .stack { display: none; }
+      section { padding: 4rem 1rem; }
+      .features, .steps, .problem { grid-template-columns: 1fr; }
+      .fb { padding: 1.5rem 1.1rem; }
+      .fb-grid { grid-template-columns: 1fr; gap: 0; }
+      .privacy { padding: 2.4rem 1.3rem; }
+      footer { padding: 1.6rem 1rem; justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-left">
+    <a href="index.html#products" class="nav-back" aria-label="Back to DILOS.ai">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span class="nav-wordmark">DILOS<span class="dot">.</span>ai</span>
+    </a>
+    <div class="nav-sep"></div>
+    <a href="#top" class="nav-product">
+      <img src="dilos-photo-icon.png" alt="" />
+      <span>Dilos Photo</span>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#feedback" class="btn btn-blue">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="nav-cta-text">Share feedback</span>
+  </a>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero" id="top">
+  <img class="hero-icon" src="dilos-photo-icon.png" alt="Dilos Photo app icon" width="104" height="104" />
+  <div class="badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M1 20h22"/></svg>
+    For Mac &middot; Coming soon to the Mac App Store
+  </div>
+  <h1>Keep everything.<br><em>Cloud only what matters.</em></h1>
+  <p class="hero-sub">
+    Dilos Photo archives the photos you don't need in iCloud to a folder on your Mac,
+    verified and organized, then frees their iCloud space when you say so.
+  </p>
+  <div class="hero-cta">
+    <a href="#how" class="btn btn-blue btn-lg">See how it works</a>
+    <a href="#feedback" class="btn btn-ghost btn-lg">Tell us what you think</a>
+  </div>
+  <p class="hero-note">Requires macOS 14 Sonoma or later &middot; iCloud Photos</p>
+</header>
+
+<!-- ── APP WINDOW ── -->
+<div class="mock-wrap reveal" aria-label="Dilos Photo's Overview window, with example numbers">
+  <div class="mock" role="img" aria-label="The Dilos Photo Overview: 18,402 photos in iCloud, 1,284 photos ready to remove, about 22.6 GB">
+    <aside class="mock-side">
+      <div class="lights"><i></i><i></i><i></i></div>
+      <div class="mock-brand">
+        <img src="dilos-photo-icon.png" alt="" />
+        <div><b>Dilos Photo</b><small>Keep everything.<br>Cloud only what matters.</small></div>
+      </div>
+      <div class="mock-nav">
+        <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Overview</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v11h14V9M10 13h4"/></svg>Archive</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Retention Rules</span>
+      </div>
+    </aside>
+    <div class="mock-main">
+      <div class="mock-head">
+        <div><h3>Overview</h3><p>Keep everything. Cloud only what matters.</p></div>
+        <span class="pill"><i></i>Scan completed</span>
+      </div>
+      <div class="mock-cards">
+        <div class="mc blue">
+          <div class="ic" style="background:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+          <div><small>iCloud Library</small><b>18,402</b><em>photos and videos</em></div>
+        </div>
+        <div class="mc">
+          <div class="ic" style="background:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+          <div><small>Ready to Archive</small><b>36</b><em>archiving now</em></div>
+        </div>
+        <div class="mc amber">
+          <div class="ic" style="background:var(--amber)"><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+          <div><small>Ready to Remove</small><b>1,284</b><em>~22.6 GB in iCloud</em></div>
+        </div>
+        <div class="mc">
+          <div class="ic" style="background:var(--indigo)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <div><small>Removed to Date</small><b>9,750</b><em>removed from iCloud</em></div>
+        </div>
+      </div>
+      <div class="mock-banner">
+        <div class="stack"><i></i><i></i><i></i></div>
+        <div class="txt">
+          <b>1,284 photos are ready to be removed from iCloud</b>
+          <p>They're safely archived to your folder. Review them, then remove to free up about 22.6 GB of iCloud space.</p>
+        </div>
+        <span class="mini-btn">Review Archived Photos</span>
+      </div>
+      <div class="mock-row">
+        <div class="mr"><b><i style="background:var(--green)"></i>Photos Access</b><p>Full Access. Dilos Photo can read and manage your library.</p></div>
+        <div class="mr"><b><i style="background:var(--blue)"></i>Archive Folder</b><p>/Volumes/Photo Archive<br>1.4 TB available</p></div>
+        <div class="mr"><b><i style="background:var(--indigo)"></i>Last Scan</b><p>Today 9:41 AM<br>Checks for changes hourly</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROBLEM ── -->
+<section class="alt">
+  <p class="eyebrow">The Trade-off</p>
+  <h2 class="title">You shouldn't have to choose</h2>
+  <p class="sub">An iCloud Photos library only grows. Until now, the options were all bad.</p>
+  <div class="problem reveal">
+    <div>
+      <h3><span class="x">✕</span>Keep paying more</h3>
+      <p>Upgrade to the next iCloud plan, again, for photos from years ago you rarely open.</p>
+    </div>
+    <div>
+      <h3><span class="x">✕</span>Delete and hope</h3>
+      <p>Hunt through thousands of photos, delete some, and hope you never want them back.</p>
+    </div>
+    <div class="answer">
+      <h3><span class="ok">✓</span>Archive, then free up</h3>
+      <p>Keep every original on a drive you own. Keep in iCloud only what you actually want on all your devices.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <p class="eyebrow">How It Works</p>
+  <h2 class="title">Three steps. You approve the last one.</h2>
+  <p class="sub">Archiving runs on its own in the background. Removing from iCloud only happens when you click Remove and confirm.</p>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">STEP 1</div>
+      <div class="step-icon" style="background:var(--blue-dim)"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+      <h3>Set your rules</h3>
+      <p>Decide how long photos stay in iCloud: the last two years, Favorites forever, a Travel album for five years, screenshots for three months.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">STEP 2</div>
+      <div class="step-icon" style="background:var(--green-dim)"><svg viewBox="0 0 24 24" fill="none" stroke="#5fd387" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+      <h3>Archived automatically</h3>
+      <p>Photos past their rules are copied to your folder in full quality, each copy checked against the original. Your library stays untouched.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">STEP 3</div>
+      <div class="step-icon" style="background:var(--amber-dim)"><svg viewBox="0 0 24 24" fill="none" stroke="#f7b955" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><path d="m9 13 2 2 4-4"/></svg></div>
+      <h3>Free up iCloud, when ready</h3>
+      <p>See exactly what's archived and how much space you'll get back. Click Remove, confirm with macOS, and the photos go to Recently Deleted.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── RULES ── -->
+<section class="alt">
+  <div class="split">
+    <div class="reveal">
+      <p class="eyebrow" style="text-align:left">Retention Rules</p>
+      <h2>Your rules decide what stays in iCloud</h2>
+      <p>Set one default, then add exceptions for what matters to you. When several rules apply to a photo, the most protective one wins, so a favorite in a short-lived album is still kept.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#5fd387" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Rules for Favorites, any album, and smart albums like Screenshots, Videos or Selfies</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#5fd387" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Album rules survive renames and tell apart albums with the same name</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#5fd387" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Change a rule anytime; photos it now protects simply stay in iCloud</li>
+      </ul>
+    </div>
+    <div class="rules reveal" aria-label="Example retention rules">
+      <div class="rules-head"><span>Keep in iCloud for…</span><span>Example</span></div>
+      <div class="rule">
+        <div class="rule-l"><div class="rule-ic" style="background:var(--blue-dim)"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2.2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div><div><b>All photos</b><small>Default</small></div></div>
+        <span class="val">2 years</span>
+      </div>
+      <div class="rule">
+        <div class="rule-l"><div class="rule-ic" style="background:rgba(239,68,68,0.12)"><svg viewBox="0 0 24 24" fill="#ff7b7b"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.3 5 6.6 5c2 0 3.5 1.1 4.4 2.5C11.9 6.1 13.4 5 15.4 5c3.3 0 5.5 3.3 4.1 6.7C19.5 16.4 12 21 12 21z"/></svg></div><div><b>Favorites</b><small>Favorites rule</small></div></div>
+        <span class="val forever">Forever</span>
+      </div>
+      <div class="rule">
+        <div class="rule-l"><div class="rule-ic" style="background:var(--amber-dim)"><svg viewBox="0 0 24 24" fill="none" stroke="#f7b955" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div><div><b>Family Trip 2024</b><small>Album</small></div></div>
+        <span class="val">5 years</span>
+      </div>
+      <div class="rule">
+        <div class="rule-l"><div class="rule-ic" style="background:rgba(94,107,246,0.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#8c96ff" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div><div><b>Screenshots</b><small>Smart album</small></div></div>
+        <span class="val">3 months</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <p class="eyebrow">Built Carefully</p>
+  <h2 class="title">Made for photos you can't replace</h2>
+  <p class="sub">Every step is designed so nothing leaves iCloud until a verified copy is safe on your drive.</p>
+  <div class="features reveal">
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h3>Verified copies</h3>
+      <p>Every archived file is checked against the original's size and opened to confirm it's a readable image or video before the photo counts as archived.</p>
+    </div>
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h3>Removal is always yours</h3>
+      <p>Nothing is ever deleted automatically. You review, click Remove, and confirm in macOS's own dialog. Removed photos wait in Recently Deleted.</p>
+    </div>
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+      <h3>Full quality, nothing lost</h3>
+      <p>Originals in their own format (HEIC, RAW, ProRes), plus your edits and the video half of Live Photos. Bursts are kept together.</p>
+    </div>
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+      <h3>An archive you can read</h3>
+      <p>Plain files in year and month folders, each with a small details file: date, location, albums and favorite. No database, no lock-in.</p>
+    </div>
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/></svg></div>
+      <h3>Hidden stays hidden</h3>
+      <p>Photos in your Hidden album are never archived or removed. Edited a photo after it was archived? It's archived again first.</p>
+    </div>
+    <div class="feature">
+      <div class="f-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+      <h3>Quietly in the menu bar</h3>
+      <p>Checks for library changes on your schedule, pauses on battery if you like, and stops before your archive drive fills up.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHIVE FOLDER ── -->
+<section class="alt">
+  <div class="split">
+    <div class="tree reveal" aria-label="Example archive folder layout"><span class="d">Photo Archive/</span>
+└─ <span class="d">2023/</span>
+   └─ <span class="d">2023-07/</span>
+      ├─ IMG_8915.HEIC          <span class="c"># original</span>
+      ├─ IMG_8915_edited.heic   <span class="c"># your edit</span>
+      ├─ IMG_8915.MOV           <span class="c"># Live Photo video</span>
+      ├─ <span class="j">IMG_8915.json</span>          <span class="c"># date, place, albums</span>
+      ├─ IMG_8916.DNG
+      └─ <span class="j">IMG_8916.json</span></div>
+    <div class="reveal">
+      <p class="eyebrow" style="text-align:left">Your Archive</p>
+      <h2>Your photos, on a drive you own</h2>
+      <p>Choose any folder: on your Mac, an external drive or a NAS. Dilos Photo files everything by the month it was taken, so finding a photo from a summer five years ago takes seconds in Finder.</p>
+      <p>Each file keeps its capture date, so it sorts correctly anywhere. Back up the folder like any other, with Time Machine or your favorite tool.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRIVACY ── -->
+<section id="privacy">
+  <div class="privacy reveal">
+    <svg class="shield" viewBox="0 0 24 24" fill="none" stroke="#5aa2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <h2>Your photos never leave your Mac</h2>
+    <p>Dilos Photo works entirely on your Mac. It has no account, no servers and no analytics. Your photos move between iCloud Photos, which Apple runs, and the folder you choose. Nowhere else.</p>
+    <div class="chips">
+      <span>No account</span>
+      <span>No servers</span>
+      <span>No tracking</span>
+      <span>Data not collected</span>
+    </div>
+    <a class="link" href="dilos-photo-privacy.html">Read the privacy policy →</a>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq" class="alt">
+  <p class="eyebrow">Questions</p>
+  <h2 class="title">Good to know</h2>
+  <p class="sub">Can't find your answer? Ask in the form below.</p>
+  <div class="faq">
+    <details>
+      <summary>Is it safe to remove photos from iCloud?</summary>
+      <p>Dilos Photo offers a photo for removal only after its archived copy has been written and verified. When you remove, macOS asks you to confirm, and the photos go to Recently Deleted in Photos, where they can usually be recovered for 30 days. Keep your archive folder backed up: once photos are removed from iCloud, it holds their copies.</p>
+    </details>
+    <details>
+      <summary>Will removed photos disappear from my iPhone too?</summary>
+      <p>Yes. Removing from iCloud Photos removes the photo from every device using that library. That's what frees the iCloud space. The archived copy stays in your folder on your Mac or drive.</p>
+    </details>
+    <details>
+      <summary>Do I need an external drive?</summary>
+      <p>No. Any folder works, including one on your Mac's internal disk. An external drive or NAS is a good choice for large libraries. Avoid folders that sync to iCloud Drive, since the archive would use iCloud space again; Dilos Photo warns you if you pick one.</p>
+    </details>
+    <details>
+      <summary>What about edited photos, Live Photos and bursts?</summary>
+      <p>Edited photos are archived with both the original and your edited version. Live Photos keep their video. Bursts are archived and removed as one, never partially. If you edit a photo after it was archived, it's archived again before it can be removed.</p>
+    </details>
+    <details>
+      <summary>Which Macs does it run on?</summary>
+      <p>Any Mac with macOS 14 Sonoma or later, Apple silicon or Intel, using iCloud Photos as its System Photo Library.</p>
+    </details>
+    <details>
+      <summary>When is it available?</summary>
+      <p>Dilos Photo is coming soon to the Mac App Store. Leave your email in the form below if you'd like to hear when it's out.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ── FEEDBACK ── -->
+<section id="feedback">
+  <p class="eyebrow">Feedback</p>
+  <h2 class="title">Tell us what you think</h2>
+  <p class="sub">Ideas, questions, a bug, or just a note: every message is read by the people who build Dilos Photo.</p>
+
+  <form class="fb" id="fb-form" novalidate>
+    <div class="field">
+      <label id="kind-label">What's it about?</label>
+      <div class="kinds" role="radiogroup" aria-labelledby="kind-label">
+        <input type="radio" name="kind" id="k-feedback" value="feedback" checked><label for="k-feedback">General feedback</label>
+        <input type="radio" name="kind" id="k-feature" value="feature"><label for="k-feature">Feature idea</label>
+        <input type="radio" name="kind" id="k-bug" value="bug"><label for="k-bug">Something's wrong</label>
+        <input type="radio" name="kind" id="k-question" value="question"><label for="k-question">Question</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="fb-message">Your message</label>
+      <textarea id="fb-message" name="message" maxlength="4000" required placeholder="What would make Dilos Photo better for you?"></textarea>
+    </div>
+    <div class="count"><span id="fb-count">0</span> / 4000</div>
+
+    <div class="fb-grid">
+      <div class="field">
+        <label for="fb-name">Name <small>(optional)</small></label>
+        <input id="fb-name" name="name" type="text" maxlength="100" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="fb-email">Email <small>(optional, for a reply)</small></label>
+        <input id="fb-email" name="email" type="email" maxlength="200" autocomplete="email" />
+      </div>
+    </div>
+
+    <!-- Left empty by people; bots tend to fill it. -->
+    <div class="hp" aria-hidden="true">
+      <label for="fb-website">Website</label>
+      <input id="fb-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="fb-foot">
+      <small>We use your message and email only to improve Dilos Photo and to reply. See the <a href="dilos-photo-privacy.html#feedback">privacy policy</a>.</small>
+      <button class="btn btn-blue btn-lg" type="submit" id="fb-submit">Send feedback</button>
+    </div>
+    <div class="fb-status" id="fb-status" role="status" aria-live="polite"></div>
+  </form>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <small>&copy; 2026 DILOS.ai &middot; Dilos Photo</small>
+  <div class="foot-links">
+    <a href="index.html">DILOS.ai</a>
+    <a href="dilos-photo-privacy.html">Privacy</a>
+    <a href="#feedback">Support &amp; feedback</a>
+    <a href="mailto:contact@dilos.ai">contact@dilos.ai</a>
+  </div>
+</footer>
+
+<script>
+  // Fade sections in as they scroll into view.
+  (function () {
+    const items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { items.forEach(el => el.classList.add('in')); return; }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    items.forEach(el => io.observe(el));
+  })();
+
+  // Feedback form → /api/feedback (functions/api/feedback.js).
+  (function () {
+    const form = document.getElementById('fb-form');
+    const message = document.getElementById('fb-message');
+    const count = document.getElementById('fb-count');
+    const status = document.getElementById('fb-status');
+    const submit = document.getElementById('fb-submit');
+    const openedAt = Date.now();
+
+    message.addEventListener('input', () => { count.textContent = message.value.length; });
+
+    function show(text, kind) {
+      status.textContent = text;
+      status.className = 'fb-status ' + kind;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      data.message = (data.message || '').trim();
+      data.email = (data.email || '').trim();
+      if (data.message.length < 5) {
+        show('Please write a few words first.', 'err');
+        message.focus();
+        return;
+      }
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        show("That email address doesn't look right.", 'err');
+        document.getElementById('fb-email').focus();
+        return;
+      }
+      data.product = 'dilos-photo';
+      data.elapsed = Date.now() - openedAt;
+
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+      show('', '');
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error || 'Something went wrong. Please try again.');
+        form.reset();
+        count.textContent = '0';
+        show(data.email ? "Thanks! We've got your message and will reply by email." : "Thanks! We've got your message.", 'ok');
+      } catch (err) {
+        show(err.message + ' You can also email contact@dilos.ai.', 'err');
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Send feedback';
+      }
+    });
+  })();
+</script>
+</body>
+</html>
